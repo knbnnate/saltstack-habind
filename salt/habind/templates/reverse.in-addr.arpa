@@ -1,0 +1,21 @@
+$ORIGIN {{ reverse_octets }}.in-addr.arpa.
+@       IN      SOA     @       hostmaster.ha. (
+                                        {{ None|strftime("%Y%m%d%H") }} ; serial
+                                        30M     ; refresh
+                                        1H      ; retry
+                                        2H      ; expire
+                                        30 )    ; minimum
+{% set nameservers = salt['pillar.get']('habind:nameservers',['ns1','ns2']) -%}
+{% set dcs = salt['pillar.get']('habind:dcs',['alpha']) -%}
+{% for nameserver in nameservers -%}
+{% for dc in dcs -%}
+@        IN      NS      {{ nameserver }}.{{ dc }}.ha.
+{% endfor -%}
+{% endfor -%}
+{% for record in salt['pillar.get']('habind:back_octets',[{'name':'server1','octets':'1.10'},{'name':'server2','octets':'1.11'}]) -%}
+{% set record_octets_str = record.octets|string -%}
+{% set record_octets = record_octets_str.split('.') -%}
+{% do record_octets.reverse() -%}
+{% set reverse = record_octets|join(".") -%}
+{{ reverse }}   IN      PTR     {{ record.name }}.{{ forward_zone }}.
+{% endfor -%}

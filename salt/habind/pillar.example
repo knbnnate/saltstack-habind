@@ -1,0 +1,25 @@
+habind:
+  forwarders:
+    - 8.8.8.8
+    - 8.8.4.4
+  dcs:
+    - alpha
+    - beta
+  cnames: c
+  nameservers:
+    - ns1
+    - ns2
+  map:
+    alpha:
+      acl: 192.168.0.0/24
+      forward_octets: 192.168.0
+      reverse_octets: 0.192.168
+    beta:
+      acl: 192.168.1.0/24
+      forward_octets: 192.168.1
+      reverse_octets: 1.192.168
+  back_octets:
+    - name: server1
+      octets: 10
+    - name: server2
+      octets: 11
