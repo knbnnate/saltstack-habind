@@ -26,7 +26,7 @@ This code makes it easy to configure bind so that salt.cname.ha is always the CN
 - Queries to any zones not managed as part of the HA BIND configuration forward elsewhere, e.g. 172.17.1.10
 
 The configuration would simply be this pillar file:
-
+```
 habind:
   forwarders:
     - 172.17.1.10
@@ -46,7 +46,7 @@ habind:
       ns1: 11
     services:
       salt: slt1
-
+```
 Resolution would look like:
 ```
 vagrant@foo ~ # ssh 192.168.1.123 nslookup salt.cname.ha 192.168.1.11
