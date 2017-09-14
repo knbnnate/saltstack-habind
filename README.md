@@ -1,5 +1,6 @@
 # saltstack-habind
-Name resolution configuration
+*Name resolution configuration*
+
 This repository contains saltstack code for configuration of BIND 9.
 The intent is to resolve names according to query source, across disparate networks that mirror services for high availability.
 
