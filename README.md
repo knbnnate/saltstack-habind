@@ -40,7 +40,11 @@ habind:
     alpha:
       acl: '192.168.1.0/24'
       forward_octets: '192.168.1'
-      reverse_octets: '1.192.168'
+      reverse_octets: '1.168.192'
+    beta:
+      acl: '172.16.1.0/24'
+      forward_octets: '172.16.1'
+      reverse_octets: '1.16.172'
     back_octets:
       slt1: 10
       ns1: 11
