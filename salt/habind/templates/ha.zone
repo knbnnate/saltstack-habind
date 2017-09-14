@@ -1,10 +1,10 @@
 $ORIGIN ha.
-@       IN      SOA     @       hostmaster.ha. (
-                                        {{ None|strftime("%Y%m%d%H") }} ; serial
-                                        1H      ; refresh
-                                        1H      ; retry
-                                        1D      ; expire
-                                        5M )    ; minimum
+@	IN	SOA	@	hostmaster.ha. (
+					{{ None|strftime("%Y%m%d%H") }}	; serial
+					1H	; refresh
+					1H	; retry
+					1D	; expire
+					5M )	; minimum
 
 {% set cnames = salt['pillar.get']('habind:cnames','cnames') -%}
 {% set nameservers = salt['pillar.get']('habind:nameservers',['ns1','ns2']) -%}
@@ -13,7 +13,7 @@ $ORIGIN ha.
 ; Zone: {{ cnames }}.ha
 {% for nameserver in nameservers -%}
 {% for dc in dcs -%}
-{{ cnames }}.ha.        IN      NS      {{ nameserver }}.{{ dc }}.ha.
+{{ cnames }}.ha.	IN	NS	{{ nameserver }}.{{ dc }}.ha.
 {% endfor -%}
 {% endfor -%}
 
@@ -21,7 +21,7 @@ $ORIGIN ha.
 {% for dc in dcs -%}
 ; Zone: {{ dc }}.ha
 {% for dc2 in dcs -%}
-{{ dc }}.ha.    IN      NS      {{ nameserver }}.{{ dc2 }}.ha.
+{{ dc }}.ha.	IN	NS	{{ nameserver }}.{{ dc2 }}.ha.
 {% endfor -%}
 {% endfor -%}
 {% endfor -%}

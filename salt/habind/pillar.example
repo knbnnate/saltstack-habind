@@ -19,7 +19,8 @@ habind:
       forward_octets: 192.168.1
       reverse_octets: 1.192.168
   back_octets:
-    - name: server1
-      octets: 10
-    - name: server2
-      octets: 11
+    server1: '10'
+    server2: '11'
+  services:
+    service1: server1
+    service2: server2

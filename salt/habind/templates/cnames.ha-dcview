@@ -1,11 +1,11 @@
 {%- set cnames = salt['pillar.get']('habind:cnames','cnames') -%}
 $ORIGIN {{ cnames }}.ha.
-@       IN      SOA     @       {{ cnames }}.ha. (
-                                        {{ None|strftime("%Y%m%d%H") }} ; serial
-                                        30M     ; refresh
-                                        1H      ; retry
-                                        2H      ; serial
-                                        30 )    ; serial
+@	IN	SOA	@	{{ cnames }}.ha. (
+					{{ None|strftime("%Y%m%d%H") }}	; serial
+					30M	; refresh
+					1H	; retry
+					2H	; serial
+					30 )	; serial
 {% set nameservers = salt['pillar.get']('habind:nameservers',['ns1','ns2']) -%}
 {% set dcs = salt['pillar.get']('habind:dcs',['alpha']) -%}
 {% for nameserver in nameservers -%}
@@ -13,7 +13,10 @@ $ORIGIN {{ cnames }}.ha.
 @        IN      NS      {{ nameserver }}.{{ dc }}.ha.
 {% endfor -%}
 {% endfor -%}
-@       IN      TXT     "{{ forward_zone }} view of .ha names"
-{% for record in salt['pillar.get']('habind:back_octets',[{'name':'server1','octets':'1.10'},{'name':'server2','octets':'1.11'}]) -%}
-{{ record.name }}       IN      CNAME   {{ record.name }}.{{ forward_zone }}.
+@	IN	TXT	"{{ forward_zone }} view of .ha names"
+{% for record in salt['pillar.get']('habind:back_octets',{'server1':'1.10','server2':'1.11'}).keys() -%}
+{{ record }}	IN	CNAME	{{ record }}.{{ forward_zone }}.
+{% endfor -%}
+{% for service, target in salt['pillar.get']('habind:services',{'service1':'server1','service2':'server2'}).items() -%}
+{{ service }}	IN	CNAME	{{ target }}
 {% endfor -%}
