@@ -5,17 +5,17 @@ $ORIGIN {{ forward_zone }}.
 					1H	; retry
 					2H	; expire
 					30 )	; minimum
-{% set nameservers = salt['pillar.get']('habind:nameservers',['ns1','ns2']) -%}
-{% set dcs = salt['pillar.get']('habind:dcs',['alpha']) -%}
+{% set nameservers = salt['pillar.get']('habind:nameservers',[]) -%}
+{% set dcs = salt['pillar.get']('habind:dcs',[]) -%}
 {% for nameserver in nameservers -%}
 {% for dc in dcs -%}
 @        IN      NS      {{ nameserver }}.{{ dc }}.ha.
 {% endfor -%}
 {% endfor -%}
-{% for record,octets in salt['pillar.get']('habind:back_octets',{'server1':'1.10','server2':'1.11'}).items() -%}
+{% for record,octets in salt['pillar.get']('habind:back_octets',{}).items() -%}
 {{ record }}	IN	A	{{ forward_octets }}.{{ octets }}
 {% endfor -%}
-{% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{'cluster1':['1.10,1.11'],'cluster2':['1.12','1.13']}).items() -%}
+{% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{}).items() -%}
 {% for octets in octetslist -%}
 {{ roundrobin }}	IN	A	{{ forward_octets }}.{{ octets }}
 {% endfor -%}

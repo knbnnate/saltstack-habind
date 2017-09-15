@@ -6,21 +6,21 @@ $ORIGIN {{ cnames }}.ha.
 					1H	; retry
 					2H	; serial
 					30 )	; serial
-{% set nameservers = salt['pillar.get']('habind:nameservers',['ns1','ns2']) -%}
-{% set dcs = salt['pillar.get']('habind:dcs',['alpha']) -%}
+{% set nameservers = salt['pillar.get']('habind:nameservers',[]) -%}
+{% set dcs = salt['pillar.get']('habind:dcs',[]) -%}
 {% for nameserver in nameservers -%}
 {% for dc in dcs -%}
 @        IN      NS      {{ nameserver }}.{{ dc }}.ha.
 {% endfor -%}
 {% endfor -%}
 @	IN	TXT	"{{ forward_zone }} view of .ha names"
-{% for record in salt['pillar.get']('habind:back_octets',{'server1':'1.10','server2':'1.11'}).keys() -%}
+{% for record in salt['pillar.get']('habind:back_octets',{}).keys() -%}
 {{ record }}	IN	CNAME	{{ record }}.{{ forward_zone }}.
 {% endfor -%}
-{% for roundrobin in salt['pillar.get']('habind:roundrobins',{'cluster1':['1.10','1.11'],'cluster2':['1.12','1.13']}).keys() -%}
+{% for roundrobin in salt['pillar.get']('habind:roundrobins',{}).keys() -%}
 {{ roundrobin }}	IN	CNAME	{{ roundrobin }}.{{ forward_zone }}.
 {% endfor -%}
-{% for service, target in salt['pillar.get']('habind:services',{'service1':'server1','service2':'server2'}).items() -%}
+{% for service, target in salt['pillar.get']('habind:services',{}).items() -%}
 {{ service }}	IN	CNAME	{{ target }}
 {% endfor -%}
 

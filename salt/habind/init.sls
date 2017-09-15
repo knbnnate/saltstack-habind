@@ -6,8 +6,8 @@ habind.bind-service:
     - name: named
     - enable: True
     - reload: True
-    - watch: {% for dc in salt['pillar.get']('habind:dcs',['alpha']) %}
-      - file: /var/named/{{ dc }}.ha.zone{% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'168.192') %}
+    - watch: {% for dc in salt['pillar.get']('habind:dcs',[]) %}
+      - file: /var/named/{{ dc }}.ha.zone{% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'') %}
       - file: /var/named/{{ reverse_octets }}.in-addr.arpa{% set cnames = salt['pillar.get']('habind:cnames','cnames') %}
       - file: /var/named/{{ cnames }}.ha-{{ dc }}view{% endfor %}
       - file: /etc/named.conf
@@ -31,8 +31,8 @@ habind.ha-zone:
     - mode: 644
 
 {% set cnames = salt['pillar.get']('habind:cnames','cnames') -%}
-{% for dc in salt['pillar.get']('habind:dcs',['alpha']) -%}
-{% set forward_octets = salt['pillar.get']('habind:map:{0}:forward_octets'.format(dc),'192.168') -%}
+{% for dc in salt['pillar.get']('habind:dcs',[]) -%}
+{% set forward_octets = salt['pillar.get']('habind:map:{0}:forward_octets'.format(dc),'') -%}
 habind.{{ dc }}-zone:
   file.managed:
     - name: /var/named/{{ dc }}.ha.zone
@@ -45,7 +45,7 @@ habind.{{ dc }}-zone:
       forward_zone: "{{ dc }}.ha"
       forward_octets: "{{ forward_octets }}"
 
-{% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'168.192') -%}
+{% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'') -%}
 habind.{{ dc }}-zone-reverse:
   file.managed:
     - name: /var/named/{{ reverse_octets }}.in-addr.arpa
