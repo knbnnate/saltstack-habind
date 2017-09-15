@@ -15,3 +15,8 @@ $ORIGIN {{ forward_zone }}.
 {% for record,octets in salt['pillar.get']('habind:back_octets',{'server1':'1.10','server2':'1.11'}).items() -%}
 {{ record }}	IN	A	{{ forward_octets }}.{{ octets }}
 {% endfor -%}
+{% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{'cluster1':['1.10,1.11'],'cluster2':['1.12','1.13']}).items() -%}
+{% for octets in octetslist -%}
+{{ roundrobin }}	IN	A	{{ forward_octets }}.{{ octets }}
+{% endfor -%}
+{% endfor -%}

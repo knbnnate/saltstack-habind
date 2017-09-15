@@ -19,3 +19,13 @@ $ORIGIN {{ reverse_octets }}.in-addr.arpa.
 {% set reverse = record_octets|join(".") -%}
 {{ reverse }}	IN	PTR	{{ record }}.{{ forward_zone }}.
 {% endfor -%}
+{% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{'cluster1':['1.10,1.11'],'cluster2':['1.12','1.13']}).items() -%}
+{% for octets in octetslist -%}
+{% set roundrobin_octets_str = octets|string -%}
+{% set roundrobin_octets = roundrobin_octets_str.split('.') -%}
+{% do roundrobin_octets.reverse() -%}
+{% set roundrobin_reverse = roundrobin_octets|join(".") -%}
+{{ roundrobin_reverse }}        IN     PTR       {{ roundrobin }}.{{ forward_zone }}.
+{% endfor -%}
+{% endfor -%}
+

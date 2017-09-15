@@ -17,6 +17,10 @@ $ORIGIN {{ cnames }}.ha.
 {% for record in salt['pillar.get']('habind:back_octets',{'server1':'1.10','server2':'1.11'}).keys() -%}
 {{ record }}	IN	CNAME	{{ record }}.{{ forward_zone }}.
 {% endfor -%}
+{% for roundrobin in salt['pillar.get']('habind:roundrobins',{'cluster1':['1.10','1.11'],'cluster2':['1.12','1.13']}).keys() -%}
+{{ roundrobin }}	IN	CNAME	{{ roundrobin }}.{{ forward_zone }}.
+{% endfor -%}
 {% for service, target in salt['pillar.get']('habind:services',{'service1':'server1','service2':'server2'}).items() -%}
 {{ service }}	IN	CNAME	{{ target }}
 {% endfor -%}
+
