@@ -21,6 +21,13 @@ habind:
   back_octets:
     server1: '10'
     server2: '11'
+  roundrobins:
+    cluster1:
+      - '10'
+      - '11'
+    cluster2:
+      - '12'
+      - '13'
   services:
     service1: server1
     service2: server2
