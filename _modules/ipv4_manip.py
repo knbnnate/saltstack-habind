@@ -108,6 +108,7 @@ def reverse_zone(ipv4_str,zone_class="C"):
   return shift(ipv4_str,zone_shift)
 
 if False:
+  print ""
   for test_case in ['reverse("255.128.63.16")',
                     'reverse_zone("255.128.63.16")',
                     'reverse_zone("255.128.63.16","b")',
@@ -123,4 +124,5 @@ if False:
                     'shift("10.10.20.20","0.16.0.0")',
                     'add("10.10.10.0","10.20")',
                     'add("10.10.10.0",10.20)']:
-    print "{0:>45s}: {1:>35s}".format(test_case, eval(test_case))
+    print "{0:>45s}: {1:>20s}".format(test_case, eval(test_case))
+  print ""
