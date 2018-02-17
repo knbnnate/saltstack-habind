@@ -14,18 +14,24 @@ $ORIGIN {{ reverse_octets }}.in-addr.arpa.
 {% endfor -%}
 {% for record, octets in salt['pillar.get']('habind:back_octets',{}).items() -%}
 {% set record_octets_str = octets|string -%}
-{% set record_octets = record_octets_str.split('.') -%}
+{% set record_octets_subnet = record_octets_str.split('.')[0] -%}
+{% set record_octets = record_octets_str.split('.')[1:] -%}
+{% if record_octets_subnet == reverse_subnet -%}
 {% do record_octets.reverse() -%}
 {% set reverse = record_octets|join(".") -%}
 {{ reverse }}	IN	PTR	{{ record }}.{{ forward_zone }}.
+{% endif -%}
 {% endfor -%}
 {% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{}).items() -%}
 {% for octets in octetslist -%}
 {% set roundrobin_octets_str = octets|string -%}
-{% set roundrobin_octets = roundrobin_octets_str.split('.') -%}
+{% set roundrobin_octets_subnet = roundrobin_octets_str.split('.')[0] -%}
+{% set roundrobin_octets = roundrobin_octets_str.split('.')[1:] -%}
+{% if roundrobin_octets_subnet == reverse_subnet -%}
 {% do roundrobin_octets.reverse() -%}
 {% set roundrobin_reverse = roundrobin_octets|join(".") -%}
 {{ roundrobin_reverse }}        IN     PTR       {{ roundrobin }}.{{ forward_zone }}.
+{% endif -%}
 {% endfor -%}
 {% endfor -%}
 

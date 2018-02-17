@@ -23,4 +23,9 @@ $ORIGIN {{ cnames }}.ha.
 {% for service, target in salt['pillar.get']('habind:services',{}).items() -%}
 {{ service }}	IN	CNAME	{{ target }}
 {% endfor -%}
-
+{% for mslicenseserver in salt['pillar.get']('habind:mslicenseservers',[]) -%}
+_VLMCS._tcp.{{ cnames }}.ha. 3600 IN SRV 0 0 1688 {{ mslicenseserver }}.
+{% endfor -%}
+{% for mx in salt['pillar.get']('habind:mx',[]) -%}
+{{ cnames }}.ha. 1800    IN      MX      10 {{ mx }}.{{ forward_zone }}.
+{% endfor -%}
