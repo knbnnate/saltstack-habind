@@ -2,6 +2,9 @@ habind:
   forwarders:
     - 8.8.8.8
     - 8.8.4.4
+  external_forward_zones:
+    special.com:
+      - 123.234.123.345
   dcs:
     - alpha
     - beta

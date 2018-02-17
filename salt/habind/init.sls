@@ -7,10 +7,16 @@ habind.bind-service:
     - enable: True
     - reload: True
     - watch: {% for dc in salt['pillar.get']('habind:dcs',[]) %}
-      - file: /var/named/{{ dc }}.ha.zone{% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'') %}
-      - file: /var/named/{{ reverse_octets }}.in-addr.arpa{% set cnames = salt['pillar.get']('habind:cnames','cnames') %}
+      - file: /var/named/{{ dc }}.ha.zone{% set cnames = salt['pillar.get']('habind:cnames','cnames') %}
       - file: /var/named/{{ cnames }}.ha-{{ dc }}view{% endfor %}
       - file: /etc/named.conf
+
+habind.bind-data:
+  file.directory:
+    - name: /var/named
+    - user: named
+    - group: named
+    - mode: 755
 
 habind.bind-config:
   file.managed:
@@ -46,9 +52,30 @@ habind.{{ dc }}-zone:
       forward_octets: "{{ forward_octets }}"
 
 {% set reverse_octets = salt['pillar.get']('habind:map:{0}:reverse_octets'.format(dc),'') -%}
-habind.{{ dc }}-zone-reverse:
+{% set back_octets = salt['pillar.get']('habind:back_octets',{}).items() -%}
+{% set reverse_subnets = [] -%}
+{% set exclude_reverse_subnets = salt['pillar.get']('habind:exclude_reverse_subnets',[]) -%}
+{% for back_octet in back_octets -%}
+{% set back_octet_subnet = back_octet[1].split(".")[0] -%}
+{% if back_octet_subnet not in exclude_reverse_subnets and back_octet_subnet not in reverse_subnets-%}
+{%   do reverse_subnets.append(back_octet_subnet)-%}
+{% endif -%}
+{% endfor -%}
+{% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{}).items() -%}
+{% for octets in octetslist -%}
+{% set roundrobin_octets_str = octets|string -%}
+{% set roundrobin_octets_subnet = roundrobin_octets_str.split('.')[0] -%}
+{% if roundrobin_octets_subnet not in exclude_reverse_subnets and roundrobin_octets_subnet not in reverse_subnets -%}
+{% do reverse_subnets.append(roundrobin_octets_subnet) -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+
+
+{% for subnet in reverse_subnets -%}
+habind.{{ subnet }}.{{ dc }}-zone-reverse:
   file.managed:
-    - name: /var/named/{{ reverse_octets }}.in-addr.arpa
+    - name: /var/named/{{ subnet }}.{{ reverse_octets }}.in-addr.arpa
     - template: jinja
     - source: salt://habind/templates/reverse.in-addr.arpa
     - user: named
@@ -56,7 +83,9 @@ habind.{{ dc }}-zone-reverse:
     - mode: 644
     - defaults:
         forward_zone: "{{ dc }}.ha"
-        reverse_octets: "{{ reverse_octets }}"
+        reverse_octets: "{{ subnet }}.{{ reverse_octets }}"
+        reverse_subnet: "{{ subnet }}"
+{% endfor -%}
 
 habind.{{ cnames }}.ha-{{ dc }}view:
   file.managed:

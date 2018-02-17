@@ -20,3 +20,6 @@ $ORIGIN {{ forward_zone }}.
 {{ roundrobin }}	IN	A	{{ forward_octets }}.{{ octets }}
 {% endfor -%}
 {% endfor -%}
+{% for service, target in salt['pillar.get']('habind:services',{}).items() -%}
+{{ service }}   IN      CNAME   {{ target }}
+{% endfor -%}
