@@ -3,21 +3,22 @@ This module provides utility functions for working with IPv4 addresses in ways c
 
 Some example inputs and outputs:
 
-                     reverse("255.128.63.16"):                       16.63.128.255
-                reverse_zone("255.128.63.16"):                        255.128.63.0
-            reverse_zone("255.128.63.16","b"):                         255.128.0.0
- reverse_zone("255.128.63.16",zone_class="a"):                           255.0.0.0
-            reverse_zone("255.128.63.16","C"):                        255.128.63.0
-                add("10.10.10.0","0.0.10.20"):                         10.10.20.20
-               sub("10.10.20.20","0.0.10.20"):                          10.10.10.0
-                 mod("10.10.20.20","0.0.1.0"):                            0.0.0.20
-               shift("10.10.20.20","0.0.1.0"):                          10.10.20.0
-                mod("10.10.20.20","0.0.16.0"):                            0.0.4.20
-              shift("10.10.20.20","0.0.16.0"):                          10.10.16.0
-                mod("10.10.20.20","0.16.0.0"):                          0.10.20.20
-              shift("10.10.20.20","0.16.0.0"):                            10.0.0.0
-                    add("10.10.10.0","10.20"):                         10.10.20.20
-                      add("10.10.10.0",10.20):                          10.10.20.2
+                     reverse("255.128.63.16"):        16.63.128.255
+                reverse_zone("255.128.63.16"):           63.128.255
+            reverse_zone("255.128.63.16","b"):              128.255
+ reverse_zone("255.128.63.16",zone_class="a"):                  255
+            reverse_zone("255.128.63.16","C"):           63.128.255
+                reverse_zone("0.0.10.20","C"):               10.0.0
+                add("10.10.10.0","0.0.10.20"):          10.10.20.20
+               sub("10.10.20.20","0.0.10.20"):           10.10.10.0
+                 mod("10.10.20.20","0.0.1.0"):             0.0.0.20
+               shift("10.10.20.20","0.0.1.0"):           10.10.20.0
+                mod("10.10.20.20","0.0.16.0"):             0.0.4.20
+              shift("10.10.20.20","0.0.16.0"):           10.10.16.0
+                mod("10.10.20.20","0.16.0.0"):           0.10.20.20
+              shift("10.10.20.20","0.16.0.0"):             10.0.0.0
+                    add("10.10.10.0","10.20"):          10.10.20.20
+                      add("10.10.10.0",10.20):           10.10.20.2
 
 Note that when IP segments with trailing zeroes can be interpreted as floats, the integrity of the operations is compromised.
 Be explicit that such segments are strings when storing them e.g. in pillar.
@@ -101,19 +102,30 @@ def reverse_zone(ipv4_str,zone_class="C"):
   '''
   if zone_class.upper() == "C":
     zone_shift="0.0.1.0"
+    fields=3
   elif zone_class.upper() == "B":
     zone_shift="0.1.0.0"
+    fields=2
   elif zone_class.upper() == "A":
     zone_shift="1.0.0.0"
-  return shift(ipv4_str,zone_shift)
+    fields=1
+  padded = reverse(shift(ipv4_str,zone_shift))
+  while padded.split(".")[0] == "0" and len(padded.split(".")) > fields:
+    padded = ".".join(padded.split(".")[1:])
+  return padded
 
-if False:
+if True:
   print ""
   for test_case in ['reverse("255.128.63.16")',
                     'reverse_zone("255.128.63.16")',
                     'reverse_zone("255.128.63.16","b")',
                     'reverse_zone("255.128.63.16",zone_class="a")',
                     'reverse_zone("255.128.63.16","C")',
+                    'reverse_zone("10.0.0.0","C")',
+                    'reverse_zone("10.0.0.0","B")',
+                    'reverse_zone("0.10.0.0","C")',
+                    'reverse_zone("0.10.0.0","B")',
+                    'reverse_zone("0.0.10.20","C")',
                     'add("10.10.10.0","0.0.10.20")',
                     'sub("10.10.20.20","0.0.10.20")',
                     'mod("10.10.20.20","0.0.1.0")',

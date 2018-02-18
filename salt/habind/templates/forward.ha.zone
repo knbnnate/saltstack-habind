@@ -13,11 +13,11 @@ $ORIGIN {{ forward_zone }}.
 {% endfor -%}
 {% endfor -%}
 {% for record,octets in salt['pillar.get']('habind:back_octets',{}).items() -%}
-{{ record }}	IN	A	{{ forward_octets }}.{{ octets }}
+{{ record }}	IN	A	{{ salt['ipv4_manip.add'](forward_octets,octets) }}
 {% endfor -%}
 {% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{}).items() -%}
 {% for octets in octetslist -%}
-{{ roundrobin }}	IN	A	{{ forward_octets }}.{{ octets }}
+{{ roundrobin }}	IN	A	{{ salt['ipv4_manip.add'](forward_octets,octets) }}
 {% endfor -%}
 {% endfor -%}
 {% for service, target in salt['pillar.get']('habind:services',{}).items() -%}
