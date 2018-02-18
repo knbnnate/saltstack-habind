@@ -56,8 +56,6 @@ habind.{{ dc }}-zone:
     - defaults:
       forward_zone: "{{ dc }}.ha"
       forward_octets: "{{ forward_octets }}"
-{% set reverse_octets = salt['ipv4_manip.reverse'](forward_octets) -%}
-{# e.g. '0.0.18.10' -#}
 {% set back_octets = salt['pillar.get']('habind:back_octets',{}).items() -%}
 {# e.g. [('foo','83.10'),('bar','83.11')] -#}
 {% set reverse_subnets = [] -%}
