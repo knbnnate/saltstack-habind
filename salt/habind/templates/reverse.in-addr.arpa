@@ -18,7 +18,7 @@ $ORIGIN {{ reverse_zone }}.in-addr.arpa.
 {% set forward_ip = salt['ipv4_manip.add'](forward_octets,record_octets_str) -%}
 {% set reverse = salt['ipv4_manip.reverse'](forward_ip) -%}
 {% if ".{0}.in-addr.arpa.".format(reverse_zone) in "{0}.in-addr.arpa.".format(reverse) -%}
-{{ reverse }}.in-addr-arpa.	IN	PTR	{{ record }}.{{ forward_zone }}.
+{{ reverse }}.in-addr.arpa.	IN	PTR	{{ record }}.{{ forward_zone }}.
 {% endif -%}
 {% endfor -%}
 {% for roundrobin, octetslist in salt['pillar.get']('habind:roundrobins',{}).items() -%}
